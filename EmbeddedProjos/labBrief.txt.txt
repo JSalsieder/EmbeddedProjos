@@ -1,0 +1,52 @@
+ /*
+ *	purpose of the lab:
+ *		Provide a DMX controller for use with any DMX network. granting the user 1 Universe
+ *		of channels to control in a 1:1 patch.
+ *
+ *
+ *	Background on DMX:
+ *			DMX or DMX512 is used as a control network for theatrical application
+ *		where signal failure will not compromise safety. Primarily this Protocol is
+ *		used to control lighting fixtures.
+ *		Each DMX bus is known as a Universe, each Universe has 512 channels hence, DMX512.
+ *			A lighting fixture connected to the DMX bus is assigned an address which corresponds to a
+ *		starting channel and then uses X number of channels as control signals. Dimmer's often are a
+ *		single channel device as each dimmer controls the power going to a single fixture. an RGB LED fixture
+ *		on the other hand may have 3 channels, one for each color.
+ *			Standard DMX consoles interface with the user using channels and address which are patched to each other
+ *		(like a digital switchboard) so a user may patch channel 1 to address 12 and address 13 this  means entering
+ *		a command as such "channel 1 @ 50%" will send a signal of 50% to both address 12 and address 13. The simplest
+ *		patch is a 1:1 patch where each channel has the same number as the address it is patched to and is only patched
+ *		to that one address.
+ *
+ *
+ *	Peripherals used in this lab: (*) = new peripheral usage
+ *
+ *		internal:
+ *			1) *USART1		--  Writes DMX signal to the transceiver IC
+ *			2) USART2		-- 	Writes to Serial Console for Debug
+ *			3) GPIO			--	Interfaces all external peripherals
+ *			4) *DMA2		-- 	Generate non-interruptible data stream independent of the CPU
+ *			5) NVIC			--  Handles Interrupts with Priority Control
+ *			6) *EXTI		--  Handles External Interrupts (encoder)
+ *
+ *		external:
+ *			7) LCD						-- GUI
+ *			8) KEYPAD					-- UI (polling)
+ *			9) *ROTARY ENCODER			-- UI (Interrupt Driven)
+ *			10) *DS75176B Transceiver	-- Creates differential output line  [data in] --> [D+ out] and [D- out]
+ *
+ *
+ *	Things I could have done better for this lab:
+ *
+ *      1)	The LCD is slowing down my Encoder interrupts and causing the encoder to
+ *      	drop entries. I would fix this by creating buffer of function pointers
+ *      	where each pointer is a lcd command. the buffer is emptied 1 command at a time
+ *      	whenever the LCD.busyFlag is empty. because there is no interrupt directly connected to the
+ *      	lcd would need a timer (systick) to count down any create an interrupt every few milliseconds.
+ *      	this would be a low priority interrupt so it would not interfere with either the DMA reset or Encoder reads.
+ *
+ *      2)	I would have added the functionality for the eeprom and additional states for creating a show mode
+ *	with saved presets, able to be executed sequentially or by user input to goto an out-of-sequence preset
+ *
+ */
